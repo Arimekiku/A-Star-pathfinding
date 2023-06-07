@@ -6,7 +6,8 @@ public class Board : MonoBehaviour
 {
     [SerializeField] private Node _nodePrefab;
 
-    private Vector2 Offset => new Vector2((_boardSize.x - 1) * 0.5f, (_boardSize.y - 1) * 0.5f); 
+    private Vector2 Offset => new Vector2((_boardSize.x - 1) * 0.5f, (_boardSize.y - 1) * 0.5f);
+
 
     private Vector2Int _boardSize;
     private Node[,] _nodes;
@@ -16,13 +17,12 @@ public class Board : MonoBehaviour
         _boardSize = newBoardSize;
         _nodes = new Node[_boardSize.x, _boardSize.y];
 
-        for (int y = 0; y < _boardSize.y; y++) 
+        for (int x = 0; x < _boardSize.x; x++) 
         {
-            for (int x = 0; x < _boardSize.x; x++) 
+            for (int y = 0; y < _boardSize.y; y++) 
             {
                 Node newNode = _nodes[x, y] = Instantiate(_nodePrefab, transform);
-                newNode.Initialize(x, y);
-                newNode.transform.position = new Vector2Int(x, y) - Offset;
+                newNode.Initialize(x, y, Offset);
                 newNode.name = "Node " + x + " " + y;
             }
 
@@ -35,24 +35,24 @@ public class Board : MonoBehaviour
 
     public Node TryGetNode(int x, int y) 
     {
-        if (x >= _boardSize.x || x < 0)
-            return null;
-
-        if (y >= _boardSize.y || y < 0)
-            return null;
-
-        return _nodes[x, y];
+        foreach (Node node in _nodes) 
+        {
+            if (node.Coordinates == new Vector2Int(x, y))
+                return node;
+        }
+        
+        return null;
     }
 
     public Node TryGetNode(Vector2Int nodeCoordinates) 
     {
-        if (nodeCoordinates.x >= _boardSize.x || nodeCoordinates.x < 0)
-            return null;
-
-        if (nodeCoordinates.y >= _boardSize.y || nodeCoordinates.y < 0)
-            return null;
-
-        return _nodes[nodeCoordinates.x, nodeCoordinates.y];
+        foreach (Node node in _nodes) 
+        {
+            if (node.Coordinates == nodeCoordinates)
+                return node;
+        }
+        
+        return null;
     }
 
     public List<Node> GetNodes() 

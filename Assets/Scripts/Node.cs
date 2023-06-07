@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Node : MonoBehaviour
+public abstract class Node : MonoBehaviour
 {
     public event Action<Node> OnNodeClick;
     public NodeModel Model { get; private set; }
@@ -13,38 +13,20 @@ public class Node : MonoBehaviour
     public float GCost { get; private set; }
     public float FCost => HCost + GCost;
 
-    private void Awake() => Model = GetComponent<NodeModel>();
+    private void Awake() 
+    { 
+        Model = GetComponent<NodeModel>();
 
-    private static readonly Vector2Int[] _directions = new Vector2Int[4] 
-    {
-        new Vector2Int( 1,  0),
-        new Vector2Int(-1,  0),
-        new Vector2Int( 0,  1),
-        new Vector2Int( 0, -1)
-    };
+        Neighbours = new List<Node>();
+    }
 
     private void OnMouseDown() => OnNodeClick?.Invoke(this);
 
-    public void FindNeighbours(Board currentMap) 
-    {
-        Neighbours = new List<Node>();
-    
-        foreach (Vector2Int direction in _directions)
-        {
-            Node neighbourNode = currentMap.TryGetNode(direction + Coordinates);
+    public abstract float CalculateDistanceTo(Node otherNode);
+    public abstract void FindNeighbours(Board currentMap);
 
-            if (neighbourNode != null) 
-                Neighbours.Add(neighbourNode);
-        }
-    }
-
-    public float CalculateDistanceTo(Node otherNode) 
-    {
-        float xValue = Mathf.Abs(this.Coordinates.x - otherNode.Coordinates.x);
-        float yValue = Mathf.Abs(this.Coordinates.y - otherNode.Coordinates.y);
-
-        return xValue + yValue; 
-    } 
+    public virtual void Initialize(int x, int y, Vector2 offset) => Coordinates = new Vector2Int(x, y);
+    public virtual void Initialize(Vector2Int newCoordinates, Vector2 offset) => Coordinates = newCoordinates;
 
     public void SetHCost(float newCost) 
     {
@@ -61,9 +43,6 @@ public class Node : MonoBehaviour
         
         GCost = newCost;
     }
-
-    public void Initialize(int x, int y) => Coordinates = new Vector2Int(x, y);
-    public void Initialize(Vector2Int newCoordinates) => Coordinates = newCoordinates;
 
     public void SetRoot(Node newRoot) => Root = newRoot;
 }
