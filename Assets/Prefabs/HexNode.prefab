@@ -164,9 +164,10 @@ MonoBehaviour:
   _targetScale: {x: 1, y: 1, z: 1}
   _targetRotation: {x: 0, y: 0, z: 0}
   _sprites:
-  - {fileID: 2000661730, guid: 828a8c9b0f2588d4fb858bb022f079a4, type: 3}
+  - {fileID: 1259252841, guid: 828a8c9b0f2588d4fb858bb022f079a4, type: 3}
   - {fileID: -1238078784, guid: 828a8c9b0f2588d4fb858bb022f079a4, type: 3}
   - {fileID: 1912281050, guid: 828a8c9b0f2588d4fb858bb022f079a4, type: 3}
+  - {fileID: 2000661730, guid: 828a8c9b0f2588d4fb858bb022f079a4, type: 3}
   - {fileID: -1168533925, guid: 828a8c9b0f2588d4fb858bb022f079a4, type: 3}
 --- !u!1 &7580522132567248040
 GameObject:
@@ -241,7 +242,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 2000661730, guid: 828a8c9b0f2588d4fb858bb022f079a4, type: 3}
+  m_Sprite: {fileID: 1259252841, guid: 828a8c9b0f2588d4fb858bb022f079a4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

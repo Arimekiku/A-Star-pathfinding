@@ -8,9 +8,9 @@ public class Board : MonoBehaviour
 
     private Vector2 Offset => new Vector2((_boardSize.x - 1) * 0.5f, (_boardSize.y - 1) * 0.5f);
 
-
     private Vector2Int _boardSize;
     private Node[,] _nodes;
+    private int _wallSpawnChance = 3;
 
     public IEnumerator Initialize(Vector2Int newBoardSize) 
     {
@@ -24,6 +24,10 @@ public class Board : MonoBehaviour
                 Node newNode = _nodes[x, y] = Instantiate(_nodePrefab, transform);
                 newNode.Initialize(x, y, Offset);
                 newNode.name = "Node " + x + " " + y;
+
+                bool shouldBecomeWall = Random.Range(0, 11) > _wallSpawnChance ? false : true;
+                if (shouldBecomeWall is true) 
+                    newNode.BecomeWall();
             }
 
             yield return new WaitForSeconds(0.05f);            
@@ -33,7 +37,18 @@ public class Board : MonoBehaviour
             node.FindNeighbours(this);
     }
 
-    public Node TryGetNode(int x, int y) 
+    public Node TryGetNodeByBoardCoord(int x, int y) 
+    {
+        if (x >= _boardSize.x || x < 0)
+            return null;
+        
+        if (y >= _boardSize.y || y < 0)
+            return null;
+
+        return _nodes[x, y];
+    }
+
+    public Node TryGetNodeByNodeCoord(int x, int y) 
     {
         foreach (Node node in _nodes) 
         {
@@ -44,7 +59,7 @@ public class Board : MonoBehaviour
         return null;
     }
 
-    public Node TryGetNode(Vector2Int nodeCoordinates) 
+    public Node TryGetNodeByNodeCoord(Vector2Int nodeCoordinates) 
     {
         foreach (Node node in _nodes) 
         {

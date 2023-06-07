@@ -11,10 +11,12 @@ public abstract class Node : MonoBehaviour
     public Vector2Int Coordinates { get; private set; }
     public float HCost { get; private set; }
     public float GCost { get; private set; }
+    public bool CanBePath { get; private set; }
     public float FCost => HCost + GCost;
 
     private void Awake() 
     { 
+        CanBePath = true;
         Model = GetComponent<NodeModel>();
 
         Neighbours = new List<Node>();
@@ -42,6 +44,13 @@ public abstract class Node : MonoBehaviour
             throw new ArgumentException("Invalid cost value");
         
         GCost = newCost;
+    }
+
+    public void BecomeWall() 
+    {
+        CanBePath = false;
+
+        Model.MarkAsWall();
     }
 
     public void SetRoot(Node newRoot) => Root = newRoot;

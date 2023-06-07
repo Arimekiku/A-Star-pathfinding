@@ -30,7 +30,7 @@ public class PathFinder
                 return ReclaimPath(startNode, targetNode);
                 
 
-            foreach (Node neighbour in currentNode.Neighbours.Where(n => _exploredNodes.Contains(n) is false)) 
+            foreach (Node neighbour in currentNode.Neighbours.Where(n => _exploredNodes.Contains(n) is false && n.CanBePath is true)) 
             {
                 bool nodeExploring = _nodesToExplore.Contains(neighbour);
                 float potentialGCost = currentNode.GCost + currentNode.CalculateDistanceTo(neighbour);

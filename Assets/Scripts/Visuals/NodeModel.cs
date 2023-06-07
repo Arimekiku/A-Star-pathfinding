@@ -71,5 +71,6 @@ public class NodeModel : MonoBehaviour
     public void MarkAsStart() => StartCoroutine(Mark(_sprites[2], _animationSpeed * Time.deltaTime / 2f));
     public void MarkAsPath() => StartCoroutine(Mark(_sprites[3], _animationSpeed * Time.deltaTime * 5f));
     public void ClearMark() => StartCoroutine(Mark(_sprites[0], _animationSpeed * Time.deltaTime * 5f));
+    public void MarkAsWall() => _renderer.sprite = _sprites[4];
     public void EnableCollider() => _collider.enabled = true;
 }

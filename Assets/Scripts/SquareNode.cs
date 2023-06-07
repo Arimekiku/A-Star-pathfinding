@@ -38,7 +38,7 @@ public class SquareNode : Node
 
         foreach (Vector2Int direction in _directions)
         {
-            Node neighbourNode = currentMap.TryGetNode(direction + Coordinates);
+            Node neighbourNode = currentMap.TryGetNodeByNodeCoord(direction + Coordinates);
 
             if (neighbourNode != null) 
                 Neighbours.Add(neighbourNode);

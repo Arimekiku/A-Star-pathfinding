@@ -18,6 +18,9 @@ public class NodeSelector : MonoBehaviour
     
     private void ClickedOnNode(Node newTargetNode) 
     {
+        if (newTargetNode.CanBePath == false)
+            return;
+        
         _currentTargetNode?.Model.ClearMark();
         _currentTargetNode = newTargetNode;
 
@@ -28,7 +31,13 @@ public class NodeSelector : MonoBehaviour
     {
         int xCoord = Random.Range(0, _boardSize.x);
         int yCoord = Random.Range(0, _boardSize.y);
-        _currentStartNode = _currentBoard.TryGetNode(xCoord, yCoord);
+        _currentStartNode = _currentBoard.TryGetNodeByBoardCoord(xCoord, yCoord);
+        while (_currentStartNode.CanBePath == false) 
+        {
+            xCoord = Random.Range(0, _boardSize.x);
+            yCoord = Random.Range(0, _boardSize.y);
+            _currentStartNode = _currentBoard.TryGetNodeByBoardCoord(xCoord, yCoord);
+        }
         _currentStartNode.Model.MarkAsStart();
 
         List<Node> nodesOnField = _currentBoard.GetNodes();

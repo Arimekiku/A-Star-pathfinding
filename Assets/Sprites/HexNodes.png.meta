@@ -119,7 +119,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Default
+      name: Hovered
       rect:
         serializedVersion: 2
         x: 0
@@ -140,7 +140,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hovered
+      name: Wall
       rect:
         serializedVersion: 2
         x: 16
@@ -202,6 +202,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Default
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94a96cdd353dd27479f0191dc87aa491
+      internalID: 1259252841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -213,10 +234,11 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Default: 2000661730
-      Hovered: -1168533925
+      Default: 1259252841
+      Hovered: 2000661730
       Start: 1912281050
       Target: -1238078784
+      Wall: -1168533925
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
