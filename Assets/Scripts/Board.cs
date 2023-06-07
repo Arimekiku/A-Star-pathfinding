@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ public class Board : MonoBehaviour
     private Vector2Int _boardSize;
     private Node[,] _nodes;
 
-    public void Initialize(Vector2Int newBoardSize) 
+    public IEnumerator Initialize(Vector2Int newBoardSize) 
     {
         _boardSize = newBoardSize;
         _nodes = new Node[_boardSize.x, _boardSize.y];
@@ -23,7 +24,9 @@ public class Board : MonoBehaviour
                 newNode.Initialize(x, y);
                 newNode.transform.position = new Vector2Int(x, y) - Offset;
                 newNode.name = "Node " + x + " " + y;
-            }            
+            }
+
+            yield return new WaitForSeconds(0.05f);            
         }
 
         foreach (Node node in _nodes) 

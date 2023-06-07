@@ -13,8 +13,11 @@ public class PathFinder
 
         _exploredNodes.Clear();
 
+        int i = 0;
+
         while (_nodesToExplore.Count != 0) 
         {
+            i++;
             Node currentNode = _nodesToExplore[0];
             foreach (Node node in _nodesToExplore) 
                 if (node.FCost <= currentNode.FCost && node.HCost < currentNode.HCost)   
@@ -43,7 +46,7 @@ public class PathFinder
                         _nodesToExplore.Add(neighbour);
                     }
                 }
-            }
+            }  
         }
 
         return null;

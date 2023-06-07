@@ -10,51 +10,66 @@ public class NodeModel : MonoBehaviour
     [Space, SerializeField] private Sprite[] _sprites;
 
     private float _currentTime = 0f, _targetTime = 1f, _animationSpeed = 1f; 
+    private Color _startColor, _targetColor;
 
     private SpriteRenderer _renderer;
+    private BoxCollider2D _collider;
 
-    private void Awake() => _renderer = GetComponentInChildren<SpriteRenderer>();  
+    private void Awake() 
+    { 
+        _renderer = GetComponentInChildren<SpriteRenderer>();  
+        _collider = GetComponent<BoxCollider2D>();
+    }
 
     private void Start() 
-    {
+    {   
+        _collider.enabled = false;
+
+        Material rMaterial = _renderer.material;
+        _startColor = new(rMaterial.color.r, rMaterial.color.g, rMaterial.color.b, 0);
+        _targetColor = new(rMaterial.color.r, rMaterial.color.g, rMaterial.color.b, rMaterial.color.a);
+
         StartCoroutine(Initialize());
     }
 
     private IEnumerator Initialize() 
     {
+        Vector3 initialPosition = transform.localPosition;
+
         while(_currentTime != _targetTime) 
         {
             _currentTime = Mathf.MoveTowards(_currentTime, _targetTime, _animationSpeed * Time.deltaTime);
-
-            transform.localScale = Vector3.Lerp(Vector3.zero, _targetScale, _spawnCurve.Evaluate(_currentTime));
-            transform.localRotation = Quaternion.Lerp(Quaternion.Euler(0f, 0f, 180f), Quaternion.Euler(_targetRotation), _spawnCurve.Evaluate(_currentTime));
+            
+            _renderer.material.color = Color.Lerp(_startColor, _targetColor, _spawnCurve.Evaluate(_currentTime) * 2f);
+            transform.localPosition = Vector3.Lerp(Vector3.left + initialPosition, initialPosition, _spawnCurve.Evaluate(_currentTime));
 
             yield return new WaitForEndOfFrame();
         }
     }
 
-    private IEnumerator Mark(Sprite sprite) 
+    private IEnumerator Mark(Sprite sprite, float speed) 
     {
         _currentTime = 0f;
-        Vector3 targetScale = new Vector3(1.2f, 1.2f, 1.2f);
-        Vector3 currentScale = transform.localScale;
+        Vector3 targetScale = new Vector3(1.1f, 1.1f, 1.1f);
+        Vector3 startScale = Vector3.one;
 
         while(_currentTime != _targetTime) 
         {
-            _currentTime = Mathf.MoveTowards(_currentTime, _targetTime, _animationSpeed * Time.deltaTime);
+            _currentTime = Mathf.MoveTowards(_currentTime, _targetTime, speed);
             float currentCurveValue = _markCurve.Evaluate(_currentTime);
 
             if (currentCurveValue > 0.9f)
                 _renderer.sprite = sprite;
             
-            transform.localScale = Vector3.Lerp(currentScale, targetScale, currentCurveValue);
+            transform.localScale = Vector3.Lerp(startScale, targetScale, currentCurveValue);
 
             yield return new WaitForEndOfFrame();
         }
     }
 
-    public void MarkAsTarget() => StartCoroutine(Mark(_sprites[1]));
-    public void MarkAsStart() => _renderer.sprite = _sprites[2];
-    public void MarkAsPath() => StartCoroutine(Mark(_sprites[3]));
-    public void ClearMark() => StartCoroutine(Mark(_sprites[0]));
+    public void MarkAsTarget() => StartCoroutine(Mark(_sprites[1], _animationSpeed * Time.deltaTime * 5f));
+    public void MarkAsStart() => StartCoroutine(Mark(_sprites[2], _animationSpeed * Time.deltaTime / 2f));
+    public void MarkAsPath() => StartCoroutine(Mark(_sprites[3], _animationSpeed * Time.deltaTime * 5f));
+    public void ClearMark() => StartCoroutine(Mark(_sprites[0], _animationSpeed * Time.deltaTime * 5f));
+    public void EnableCollider() => _collider.enabled = true;
 }
