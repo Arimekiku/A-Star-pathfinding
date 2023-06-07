@@ -5,6 +5,7 @@ using UnityEngine;
 public class Node : MonoBehaviour
 {
     public event Action<Node> OnNodeClick;
+    public NodeModel Model { get; private set; }
     public List<Node> Neighbours { get; private set; }
     public Node Root { get; private set; }
     public Vector2Int Coordinates { get; private set; }
@@ -12,7 +13,7 @@ public class Node : MonoBehaviour
     public float GCost { get; private set; }
     public float FCost => HCost + GCost;
 
-    private SpriteRenderer _renderer;
+    private void Awake() => Model = GetComponent<NodeModel>();
 
     private static readonly Vector2Int[] _directions = new Vector2Int[4] 
     {
@@ -21,8 +22,6 @@ public class Node : MonoBehaviour
         new Vector2Int( 0,  1),
         new Vector2Int( 0, -1)
     };
-
-    private void Awake() => _renderer = GetComponent<SpriteRenderer>();   
 
     private void OnMouseDown() => OnNodeClick?.Invoke(this);
 
@@ -67,9 +66,4 @@ public class Node : MonoBehaviour
     public void Initialize(Vector2Int newCoordinates) => Coordinates = newCoordinates;
 
     public void SetRoot(Node newRoot) => Root = newRoot;
-
-    public void MarkAsTarget() => _renderer.material.color = Color.black;
-    public void MarkAsStart() => _renderer.material.color = Color.cyan;
-    public void MarkAsPath() => _renderer.material.color = Color.blue;
-    public void ClearMark() => _renderer.material.color = Color.white;
 }

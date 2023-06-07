@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ public class NodeSelector : MonoBehaviour
         int xCoord = Random.Range(0, _boardSize.x);
         int yCoord = Random.Range(0, _boardSize.y);
         _currentStartNode = _currentBoard.TryGetNode(xCoord, yCoord);
-        _currentStartNode.MarkAsStart();
+        _currentStartNode.Model.MarkAsStart();
 
         foreach (Node node in _currentBoard.GetNodes()) 
         {
@@ -33,13 +34,48 @@ public class NodeSelector : MonoBehaviour
 
     private void ClickedOn(Node newTargetNode) 
     {
-        _currentTargetNode?.ClearMark();
+        _currentTargetNode?.Model.ClearMark();
         _currentTargetNode = newTargetNode;
 
-        _currentPath.ForEach(n => n.ClearMark());
+        StartCoroutine(ClearPath());
         _currentPath = new List<Node>(_pathFinder.Path(_currentStartNode, _currentTargetNode));
-        _currentPath.ForEach(n => n.MarkAsPath());
+        StartCoroutine(AnimatePath());
 
-        _currentTargetNode.MarkAsTarget();
+        _currentTargetNode.Model.MarkAsTarget();
+    }
+
+    private IEnumerator AnimatePath() 
+    {
+        _currentPath.Reverse();
+        int i = 0;
+        Node currentNode = _currentPath[i++];
+
+        while (currentNode != _currentPath[_currentPath.Count - 1]) 
+        {
+            currentNode.Model.MarkAsPath();
+
+            yield return new WaitForSeconds(0.05f);
+
+            currentNode = _currentPath[i++];
+        }
+    }
+
+    private IEnumerator ClearPath() 
+    {
+        if (_currentPath.Count == 0)
+            yield break;
+
+        List<Node> pathCopy = _currentPath;
+        int i = 0;
+        Node currentNode = pathCopy[i++];
+
+        while (currentNode != pathCopy[pathCopy.Count - 1]) 
+        {
+            currentNode.Model.ClearMark();
+
+            yield return new WaitForSeconds(0.05f);
+
+            currentNode = pathCopy[i++];
+        }
     }
 }
