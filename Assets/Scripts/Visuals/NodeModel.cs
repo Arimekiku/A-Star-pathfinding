@@ -5,8 +5,6 @@ public class NodeModel : MonoBehaviour
 {
     [SerializeField] private AnimationCurve _spawnCurve;
     [SerializeField] private AnimationCurve _markCurve;
-    [SerializeField] private Vector3 _targetScale;
-    [SerializeField] private Vector3 _targetRotation;
     [Space, SerializeField] private Sprite[] _sprites;
 
     private float _currentTime = 0f, _targetTime = 1f, _animationSpeed = 1f; 
@@ -26,13 +24,13 @@ public class NodeModel : MonoBehaviour
         _collider.enabled = false;
 
         Material rMaterial = _renderer.material;
-        _startColor = new(rMaterial.color.r, rMaterial.color.g, rMaterial.color.b, 0);
-        _targetColor = new(rMaterial.color.r, rMaterial.color.g, rMaterial.color.b, rMaterial.color.a);
+        _startColor = new Color(rMaterial.color.r, rMaterial.color.g, rMaterial.color.b, 0);
+        _targetColor = new Color(rMaterial.color.r, rMaterial.color.g, rMaterial.color.b, rMaterial.color.a);
 
-        StartCoroutine(Initialize());
+        StartCoroutine(InitialLerp());
     }
 
-    private IEnumerator Initialize() 
+    private IEnumerator InitialLerp() 
     {
         Vector3 initialPosition = transform.localPosition;
 
@@ -44,6 +42,26 @@ public class NodeModel : MonoBehaviour
             transform.localPosition = Vector3.Lerp(Vector3.left + initialPosition, initialPosition, _spawnCurve.Evaluate(_currentTime));
 
             yield return new WaitForEndOfFrame();
+        }
+    }
+
+    private IEnumerator FinalLerp() 
+    {
+        _currentTime = 0f;
+        Vector3 initialPosition = transform.localPosition;
+        Vector3 targetPosition = initialPosition + Vector3.right;
+
+        while(_currentTime != _targetTime) 
+        {
+            _currentTime = Mathf.MoveTowards(_currentTime, _targetTime, _animationSpeed * Time.deltaTime);
+            
+            _renderer.material.color = Color.Lerp(_targetColor, _startColor, _spawnCurve.Evaluate(_currentTime) * 2f);
+            transform.localPosition = Vector3.Lerp(initialPosition, targetPosition, _spawnCurve.Evaluate(_currentTime));
+
+            yield return new WaitForEndOfFrame();
+
+            if (transform.localPosition == targetPosition)
+                Destroy(this.gameObject);
         }
     }
 
@@ -68,9 +86,10 @@ public class NodeModel : MonoBehaviour
     }
 
     public void MarkAsTarget() => StartCoroutine(Mark(_sprites[1], _animationSpeed * Time.deltaTime * 5f));
-    public void MarkAsStart() => StartCoroutine(Mark(_sprites[2], _animationSpeed * Time.deltaTime / 2f));
+    public void MarkAsStart() => StartCoroutine(Mark(_sprites[2], _animationSpeed * Time.deltaTime * 2f));
     public void MarkAsPath() => StartCoroutine(Mark(_sprites[3], _animationSpeed * Time.deltaTime * 5f));
     public void ClearMark() => StartCoroutine(Mark(_sprites[0], _animationSpeed * Time.deltaTime * 5f));
     public void MarkAsWall() => _renderer.sprite = _sprites[4];
     public void EnableCollider() => _collider.enabled = true;
+    public void ClearNode() => StartCoroutine(FinalLerp());
 }

@@ -14,6 +14,8 @@ public abstract class Node : MonoBehaviour
     public bool CanBePath { get; private set; }
     public float FCost => HCost + GCost;
 
+    protected Vector2Int[] _directions;
+
     private void Awake() 
     { 
         CanBePath = true;
@@ -25,10 +27,32 @@ public abstract class Node : MonoBehaviour
     private void OnMouseDown() => OnNodeClick?.Invoke(this);
 
     public abstract float CalculateDistanceTo(Node otherNode);
-    public abstract void FindNeighbours(Board currentMap);
+    protected abstract void InitializeDirections();
 
-    public virtual void Initialize(int x, int y, Vector2 offset) => Coordinates = new Vector2Int(x, y);
-    public virtual void Initialize(Vector2Int newCoordinates, Vector2 offset) => Coordinates = newCoordinates;
+    public virtual void Initialize(int x, int y, Vector2 offset) 
+    {
+        Coordinates = new Vector2Int(x, y);
+        InitializeDirections();
+    }
+
+    public virtual void Initialize(Vector2Int newCoordinates, Vector2 offset) 
+    {
+        Coordinates = newCoordinates;
+        InitializeDirections();
+    } 
+
+    public void FindNeighbours(Board currentMap) 
+    {
+        Neighbours.Clear();
+
+        foreach (Vector2Int direction in _directions)
+        {
+            Node neighbourNode = currentMap.TryGetNodeByNodeCoord(direction + Coordinates);
+
+            if (neighbourNode != null) 
+                Neighbours.Add(neighbourNode);
+        }
+    }
 
     public void SetHCost(float newCost) 
     {
@@ -53,5 +77,6 @@ public abstract class Node : MonoBehaviour
         Model.MarkAsWall();
     }
 
+    public void DestroyNode() => Model.ClearNode();
     public void SetRoot(Node newRoot) => Root = newRoot;
 }

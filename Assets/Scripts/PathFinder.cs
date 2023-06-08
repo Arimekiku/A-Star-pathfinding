@@ -8,16 +8,16 @@ public class PathFinder
 
     public List<Node> Path(Node startNode, Node targetNode) 
     {
+        if (startNode == null || targetNode == null)
+            return new List<Node>();
+
         _nodesToExplore.Clear();
         _nodesToExplore.Add(startNode);
 
         _exploredNodes.Clear();
 
-        int i = 0;
-
         while (_nodesToExplore.Count != 0) 
         {
-            i++;
             Node currentNode = _nodesToExplore[0];
             foreach (Node node in _nodesToExplore) 
                 if (node.FCost <= currentNode.FCost && node.HCost < currentNode.HCost)   

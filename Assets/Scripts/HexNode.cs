@@ -2,16 +2,6 @@ using UnityEngine;
 
 public class HexNode : Node
 {
-    private static readonly Vector2Int[] _directions = new Vector2Int[6] 
-    {
-        new Vector2Int( 1,  0),
-        new Vector2Int(-1,  0),
-        new Vector2Int( 0,  1),
-        new Vector2Int( 0, -1),
-        new Vector2Int(-1,  1),
-        new Vector2Int( 1, -1)
-    };
-
     public override float CalculateDistanceTo(Node otherNode) 
     {
         float xValue = Mathf.Abs(this.Coordinates.x - otherNode.Coordinates.x);
@@ -37,16 +27,16 @@ public class HexNode : Node
         transform.position = new Vector2(xCoord + yCoord * 0.5f - yCoord / 2, yCoord) - offset;
     }
 
-    public override void FindNeighbours(Board currentMap) 
+    protected override void InitializeDirections() 
     {
-        Neighbours.Clear();
-
-        foreach (Vector2Int direction in _directions)
+        _directions = new Vector2Int[6] 
         {
-            Node neighbourNode = currentMap.TryGetNodeByNodeCoord(direction + Coordinates);
-
-            if (neighbourNode != null) 
-                Neighbours.Add(neighbourNode);
-        }
+            new Vector2Int( 1,  0),
+            new Vector2Int(-1,  0),
+            new Vector2Int( 0,  1),
+            new Vector2Int( 0, -1),
+            new Vector2Int(-1,  1),
+            new Vector2Int( 1, -1)
+        };
     }
 }

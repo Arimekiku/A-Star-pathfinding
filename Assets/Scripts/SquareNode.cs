@@ -2,14 +2,6 @@ using UnityEngine;
 
 public class SquareNode : Node
 {
-    private static readonly Vector2Int[] _directions = new Vector2Int[4] 
-    {
-        new Vector2Int( 1,  0),
-        new Vector2Int(-1,  0),
-        new Vector2Int( 0,  1),
-        new Vector2Int( 0, -1)
-    };
-
     public override void Initialize(int x, int y, Vector2 offset)
     {
         base.Initialize(x, y, offset);
@@ -30,18 +22,16 @@ public class SquareNode : Node
         float yValue = Mathf.Abs(this.Coordinates.y - otherNode.Coordinates.y);
 
         return xValue + yValue; 
-    } 
+    }
 
-    public override void FindNeighbours(Board currentMap) 
+    protected override void InitializeDirections() 
     {
-        Neighbours.Clear();
-
-        foreach (Vector2Int direction in _directions)
+        _directions = new Vector2Int[4] 
         {
-            Node neighbourNode = currentMap.TryGetNodeByNodeCoord(direction + Coordinates);
-
-            if (neighbourNode != null) 
-                Neighbours.Add(neighbourNode);
-        }
+            new Vector2Int( 1,  0),
+            new Vector2Int(-1,  0),
+            new Vector2Int( 0,  1),
+            new Vector2Int( 0, -1)
+        };
     }
 }
