@@ -13,6 +13,7 @@ public abstract class Node : MonoBehaviour
     public float GCost { get; private set; }
     public bool CanBePath { get; private set; }
     public float FCost => HCost + GCost;
+    public Vector2Int[] Directions => _directions;
 
     protected Vector2Int[] _directions;
 
@@ -40,19 +41,6 @@ public abstract class Node : MonoBehaviour
         Coordinates = newCoordinates;
         InitializeDirections();
     } 
-
-    public void FindNeighbours(Board currentMap) 
-    {
-        Neighbours.Clear();
-
-        foreach (Vector2Int direction in _directions)
-        {
-            Node neighbourNode = currentMap.TryGetNodeByNodeCoord(direction + Coordinates);
-
-            if (neighbourNode is not null) 
-                Neighbours.Add(neighbourNode);
-        }
-    }
 
     public void SetHCost(float newCost) 
     {

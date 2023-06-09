@@ -39,8 +39,19 @@ public class Board : MonoBehaviour
             yield return new WaitForSeconds(0.05f);            
         }
 
+        //Initialize neighbours in nodes
         foreach (Node node in _nodes) 
-            node.FindNeighbours(this);
+        { 
+            node.Neighbours.Clear();
+
+            foreach (Vector2Int direction in node.Directions)
+            {
+                Node neighbourNode = TryGetNodeByNodeCoord(direction + node.Coordinates);
+
+                if (neighbourNode is not null) 
+                    node.Neighbours.Add(neighbourNode);
+            }
+        }
         
         OnInitializeFinished.Invoke();
     }

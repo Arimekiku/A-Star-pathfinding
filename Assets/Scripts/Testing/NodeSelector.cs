@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class NodeSelector : MonoBehaviour
 {
     [SerializeField] private Vector2Int _boardSize;
-    [SerializeField] private Node _squareNodePrefab;
-    [SerializeField] private Node _hexNodePrefab;
+    [SerializeField] private SquareNode _squareNodePrefab;
+    [SerializeField] private HexNode _hexNodePrefab;
 
     private Board _currentBoard;
     private Node _currentTargetNode;
