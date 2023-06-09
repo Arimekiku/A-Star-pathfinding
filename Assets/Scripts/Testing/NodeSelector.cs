@@ -15,7 +15,22 @@ public class NodeSelector : MonoBehaviour
     private List<Node> _currentPath = new List<Node>();
     private PathFinder _pathFinder = new PathFinder();
 
-    private void Awake() => _currentBoard = FindObjectOfType<Board>();
+    private void Awake() 
+    {
+        _currentBoard = FindObjectOfType<Board>();
+        _currentBoard.OnInitializeFinished += () => {
+            List<Node> nodesOnField = _currentBoard.GetNodes();
+
+            foreach (Node node in nodesOnField) 
+            {
+                node.Model.EnableCollider();
+
+                node.OnNodeClick += ClickedOnNode;
+            } 
+
+            PickRandomStartNode();
+        };
+    } 
 
     private void Start() => StartCoroutine(_currentBoard.Initialize(_boardSize, _squareNodePrefab));
     
@@ -27,7 +42,7 @@ public class NodeSelector : MonoBehaviour
         _currentTargetNode?.Model.ClearMark();
         _currentTargetNode = newTargetNode;
 
-        StartCoroutine(ClearPath());
+        StartCoroutine(ClearAndCreatePath());
     }
 
     public void ClickedOnSwitch() 
@@ -50,80 +65,67 @@ public class NodeSelector : MonoBehaviour
             StartCoroutine(_currentBoard.Initialize(_boardSize, _hexNodePrefab));
     }
 
-    public void DisableButtonForSeconds(Button button) 
-    {
-        StartCoroutine(DisableButton(button));
-    }
-
     public void ClickedOnStart() 
-    {
-        _currentStartNode?.Model.ClearMark();
+    {   
         StartCoroutine(ClearPath());
 
-        int xCoord = Random.Range(0, _boardSize.x);
-        int yCoord = Random.Range(0, _boardSize.y);
-        _currentStartNode = _currentBoard.TryGetNodeByBoardCoord(xCoord, yCoord);
+        _currentPath.Clear();
+        
+        _currentStartNode?.Model.ClearMark();
+        _currentStartNode.OnNodeClick += ClickedOnNode;
+
+        _currentTargetNode?.Model.ClearMark();
+        _currentTargetNode = null;
+
+        PickRandomStartNode();
+    }
+
+    private void PickRandomStartNode() 
+    {
+        _currentStartNode = _currentBoard.SelectRandomPoint();
         while (_currentStartNode.CanBePath == false) 
-        {
-            xCoord = Random.Range(0, _boardSize.x);
-            yCoord = Random.Range(0, _boardSize.y);
-            _currentStartNode = _currentBoard.TryGetNodeByBoardCoord(xCoord, yCoord);
-        }
-        _currentStartNode.Model.MarkAsStart();
+            _currentStartNode = _currentBoard.SelectRandomPoint();
 
-        List<Node> nodesOnField = _currentBoard.GetNodes();
-
-        foreach (Node node in nodesOnField) 
-        {
-            if (node == _currentStartNode)
-                continue;
-            
-            node.OnNodeClick += ClickedOnNode;
-        }
-
-        foreach (Node node in nodesOnField) 
-            node.Model.EnableCollider();
+        _currentStartNode.Model.MarkAsStart(); 
+        _currentStartNode.OnNodeClick -= ClickedOnNode;
     }
 
     private IEnumerator AnimatePath() 
     {
-        if (_currentPath.Count == 0)
-            yield break;
-        
         _currentPath.Reverse();
-        int i = 0;
-        Node currentNode = _currentPath[i++];
 
-        while (currentNode != _currentPath[_currentPath.Count - 1]) 
+        foreach (Node currentNode in _currentPath) 
         {
-            currentNode.Model.MarkAsPath();
+            if (currentNode == _currentTargetNode) 
+            {
+                currentNode.Model.MarkAsTarget();
+                yield break;
+            }
 
             yield return new WaitForSeconds(0.02f);
 
-            currentNode = _currentPath[i++];
+            currentNode.Model.MarkAsPath();
         }
-
-        _currentTargetNode.Model.MarkAsTarget();
     }
 
     private IEnumerator ClearPath() 
     {
-        if (_currentPath.Count != 0) 
+        List<Node> pathCopy = new List<Node>(_currentPath);
+
+        foreach (Node currentNode in pathCopy) 
         {
-            int i = 0;
-            Node currentNode = _currentPath[i++];
-
-            while (currentNode != _currentPath[_currentPath.Count - 1]) 
-            {
-                currentNode.Model.ClearMark();
-
-                yield return new WaitForSeconds(0.02f);
-
-                currentNode = _currentPath[i++];
-            }
+            yield return new WaitForSeconds(0.02f);
 
             currentNode.Model.ClearMark();
         }
+    }
+
+    private IEnumerator ClearAndCreatePath() 
+    {
+        StartCoroutine(ClearPath());
+
+        if (_currentPath.Count is not 0)
+            yield return new WaitForSeconds(0.5f);
 
         _currentPath = new List<Node>(_pathFinder.Path(_currentStartNode, _currentTargetNode));
 
@@ -138,4 +140,6 @@ public class NodeSelector : MonoBehaviour
 
         buttonToDisable.interactable = true;
     }
+
+    public void DisableButtonForSeconds(Button button) => StartCoroutine(DisableButton(button));
 }

@@ -1,6 +1,6 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class Board : MonoBehaviour
@@ -10,6 +10,8 @@ public class Board : MonoBehaviour
     private Vector2Int _boardSize;
     private Node[,] _nodes;
     private int _wallSpawnChance = 3;
+
+    public event Action OnInitializeFinished;
 
     public IEnumerator Initialize(Vector2Int newBoardSize, Node newNodePrefab) 
     {
@@ -26,9 +28,12 @@ public class Board : MonoBehaviour
                 newNode.name = "Node " + x + " " + y;
 
                 //Spawn walls
-                bool shouldBecomeWall = Random.Range(0, 11) > _wallSpawnChance ? false : true;
+                bool shouldBecomeWall = UnityEngine.Random.Range(0, 11) > _wallSpawnChance ? false : true;
                 if (shouldBecomeWall is true) 
-                    newNode.BecomeWall();
+                {
+                    newNode.BlockPath();
+                    newNode.Model.MarkAsWall();
+                }   
             }
 
             yield return new WaitForSeconds(0.05f);            
@@ -36,6 +41,8 @@ public class Board : MonoBehaviour
 
         foreach (Node node in _nodes) 
             node.FindNeighbours(this);
+        
+        OnInitializeFinished.Invoke();
     }
 
     public Node TryGetNodeByBoardCoord(int x, int y) 
@@ -87,6 +94,14 @@ public class Board : MonoBehaviour
         StopAllCoroutines();
 
         foreach (Node node in _nodes)
-            node?.DestroyNode();
+            node?.Model.ClearNode();
+    }
+
+    public Node SelectRandomPoint()
+    {
+        int xCoord = UnityEngine.Random.Range(0, _boardSize.x);
+        int yCoord = UnityEngine.Random.Range(0, _boardSize.y);
+
+        return _nodes[xCoord, yCoord];
     }
 }

@@ -24,7 +24,7 @@ public abstract class Node : MonoBehaviour
         Neighbours = new List<Node>();
     }
 
-    private void OnMouseDown() => OnNodeClick?.Invoke(this);
+    private void OnMouseDown() => OnNodeClick.Invoke(this);
 
     public abstract float CalculateDistanceTo(Node otherNode);
     protected abstract void InitializeDirections();
@@ -49,7 +49,7 @@ public abstract class Node : MonoBehaviour
         {
             Node neighbourNode = currentMap.TryGetNodeByNodeCoord(direction + Coordinates);
 
-            if (neighbourNode != null) 
+            if (neighbourNode is not null) 
                 Neighbours.Add(neighbourNode);
         }
     }
@@ -70,13 +70,6 @@ public abstract class Node : MonoBehaviour
         GCost = newCost;
     }
 
-    public void BecomeWall() 
-    {
-        CanBePath = false;
-
-        Model.MarkAsWall();
-    }
-
-    public void DestroyNode() => Model.ClearNode();
+    public void BlockPath() => CanBePath = false;
     public void SetRoot(Node newRoot) => Root = newRoot;
 }

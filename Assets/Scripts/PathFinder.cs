@@ -3,18 +3,10 @@ using System.Linq;
 
 public class PathFinder
 {
-    private List<Node> _nodesToExplore = new List<Node>();
-    private List<Node> _exploredNodes = new List<Node>();
-
     public List<Node> Path(Node startNode, Node targetNode) 
     {
-        if (startNode == null || targetNode == null)
-            return new List<Node>();
-
-        _nodesToExplore.Clear();
-        _nodesToExplore.Add(startNode);
-
-        _exploredNodes.Clear();
+        List<Node> _nodesToExplore = new List<Node>() { startNode };
+        List<Node> _exploredNodes = new List<Node>();
 
         while (_nodesToExplore.Count != 0) 
         {
